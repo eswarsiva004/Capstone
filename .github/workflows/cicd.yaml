@@ -10,8 +10,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  test_build:
-    name: Test and Build
+  build:
+    name: Build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,14 +39,14 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Upload test coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: angular-test-coverage
-          path: coverage/
-          if-no-files-found: ignore
-          retention-days: 10
+      # - name: Upload test coverage
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: angular-test-coverage
+      #     path: coverage/
+      #     if-no-files-found: ignore
+      #     retention-days: 10
 
   # dockerize_and_push:
   #   name: Dockerize and push the image

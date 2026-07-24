@@ -13,7 +13,7 @@ on:
         type: boolean
         required: false
         default: false
-      github-password:
+      image-name:
         description: GHCR image name without registry prefix
         type: string
         required: false
@@ -49,8 +49,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          # password: ${{ secrets.GITHUB_TOKEN }}
-          password: github-password
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta

@@ -45,7 +45,7 @@ jobs:
     with:
       node-version: "22"
       publish-image: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      github-password: ${{ secrets.GITHUB_TOKEN }}
+      image-name: cap-stone-project-image
     permissions:
       contents: read
       packages: write

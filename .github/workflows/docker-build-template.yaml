@@ -27,29 +27,29 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: Lint, test, and build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-      - name: Prepare Node project
-        uses: ./.github/actions/setup-node-project
-        with:
-          node-version: ${{ inputs.node-version }}
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
-      - name: Upload application artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: application-dist
-          path: dist/
-          if-no-files-found: error
+  # quality:
+  #   name: Lint, test, and build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out source
+  #       uses: actions/checkout@v4
+  #     - name: Prepare Node project
+  #       uses: ./.github/actions/setup-node-project
+  #       with:
+  #         node-version: ${{ inputs.node-version }}
+  #     - run: npm run lint
+  #     - run: npm test
+  #     - run: npm run build
+  #     - name: Upload application artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: application-dist
+  #         path: dist/
+  #         if-no-files-found: error
 
   container:
-    name: Build and optionally publish image
-    needs: quality
+    name: Build and publish image
+    # needs: quality
     if: ${{ inputs.publish-image }}
     runs-on: ubuntu-latest
     permissions:

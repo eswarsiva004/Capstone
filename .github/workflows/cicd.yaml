@@ -30,11 +30,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Lint
-      #   run: npm run lint
+      - name: Lint
+        run: npm run lint
 
-      # - name: Run unit tests
-      #   run: npm run test -- --no-watch --coverage
+      - name: Run unit tests
+        run: npm run test -- --no-watch --coverage
 
       - name: Build application
         run: npm run build

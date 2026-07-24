@@ -2,22 +2,22 @@ name: Docker Build Template
 
 on:
   workflow_call:
-    inputs:
-      node-version:
-        description: Node.js version used for CI
-        type: string
-        required: false
-        default: "22"
-      publish-image:
-        description: Build and publish an image to GHCR
-        type: boolean
-        required: false
-        default: false
-      image-name:
-        description: GHCR image name without registry prefix
-        type: string
-        required: false
-        default: ""
+    # inputs:
+    #   node-version:
+    #     description: Node.js version used for CI
+    #     type: string
+    #     required: false
+    #     default: "22"
+    #   publish-image:
+    #     description: Build and publish an image to GHCR
+    #     type: boolean
+    #     required: false
+    #     default: false
+    #   image-name:
+    #     description: GHCR image name without registry prefix
+    #     type: string
+    #     required: false
+    #     default: ""
     outputs:
       image-digest:
         description: Published container image digest
@@ -27,52 +27,54 @@ permissions:
   contents: read
 
 jobs:
-  # quality:
-  #   name: Lint, test, and build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out source
-  #       uses: actions/checkout@v4
-  #     - name: Prepare Node project
-  #       uses: ./.github/actions/setup-node-project
-  #       with:
-  #         node-version: ${{ inputs.node-version }}
-  #     - run: npm run lint
-  #     - run: npm test
-  #     - run: npm run build
-  #     - name: Upload application artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: application-dist
-  #         path: dist/
-  #         if-no-files-found: error
-
-  container:
-    name: Build and publish image
-    # needs: quality
-    if: ${{ inputs.publish-image }}
+  dockerize_and_push:
+    name: Dockerize and push the image
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
       attestations: write
-    outputs:
-      digest: ${{ steps.build.outputs.digest }}
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push
-        id: build
+
+      - name: Log into GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest
+
+      - name: Build and push Docker image
+        id: push-step
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ inputs.image-name }}:${{ github.sha }}
+          push: ${{ github.event_name != 'pull_request' }}
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build provenance attestation
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push-step.outputs.digest }}
+          push-to-registry: true

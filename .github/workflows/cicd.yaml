@@ -11,10 +11,14 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build, Lint & Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents:
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
 
     steps:
       - name: Checkout the code
@@ -23,7 +27,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node-version }}
           cache: npm
           cache-dependency-path: package-lock.json
 

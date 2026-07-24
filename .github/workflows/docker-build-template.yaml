@@ -2,22 +2,22 @@ name: Docker Build Template
 
 on:
   workflow_call:
-    # inputs:
-    #   node-version:
-    #     description: Node.js version used for CI
-    #     type: string
-    #     required: false
-    #     default: "22"
-    #   publish-image:
-    #     description: Build and publish an image to GHCR
-    #     type: boolean
-    #     required: false
-    #     default: false
-    #   image-name:
-    #     description: GHCR image name without registry prefix
-    #     type: string
-    #     required: false
-    #     default: ""
+    inputs:
+      node-version:
+        description: Node.js version used for CI
+        type: string
+        required: false
+        default: "22"
+      publish-image:
+        description: Build and publish an image to GHCR
+        type: boolean
+        required: false
+        default: false
+      image-name:
+        description: GHCR image name without registry prefix
+        type: string
+        required: false
+        default: ""
     outputs:
       image-digest:
         description: Published container image digest

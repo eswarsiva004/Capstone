@@ -27,3 +27,15 @@ jobs:
 
       - name: Build the Angular Application
         run: npm run build
+
+  dockerize_and_push:
+    uses: ./.github/workflows/docker-build-template.yaml
+    with:
+      node-version: "22"
+      publish-image: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      image-name: cap-stone-project-image
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write

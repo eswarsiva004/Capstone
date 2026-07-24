@@ -14,11 +14,11 @@ jobs:
     name: Build, Lint & Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     permissions:
-      contents:
+      contents: read
 
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [18, 20, 22, 24]
 
     steps:
       - name: Checkout the code

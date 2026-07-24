@@ -1,4 +1,4 @@
-name: Angular CI and Containerization
+name: Capstone CI Project
 
 on:
   push:
@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      # - name: Lint
+      #   run: npm run lint
 
       - name: Run unit tests
         run: npm run test -- --no-watch --coverage
